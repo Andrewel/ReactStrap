@@ -1,4 +1,6 @@
 const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const port = process.env.PORT || 8081;
 
@@ -38,15 +40,21 @@ module.exports = {
     extensions: ['*', '.js', '.jsx', '.css', '.scss'],
   },
   output: {
-    path: __dirname + '/dist',
+    path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
     filename: 'bundle.js',
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'dist/index.html',
+    }),
+  ],
   devServer: {
     contentBase: './dist',
-    host: "localhost",
+    host: 'localhost',
     port: port,
     hot: true,
+    historyApiFallback: true,
   },
 };
