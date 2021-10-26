@@ -13,7 +13,6 @@ import matchSorter from 'match-sorter';
 import Button from '@material-ui/core/Button';
 import { Delete } from '@material-ui/icons';
 import Icon from '@material-ui/core/Icon';
-import { TransitionsModal } from './TransitionsModal';
 
 const Styles = styled.div`
   padding: 1rem;
@@ -103,6 +102,34 @@ function DefaultColumnFilter({
       }}
       placeholder={`Search ${count} records...`}
     />
+  );
+}
+
+function SelectColumnFilter({
+  column: { filterValue, setFilter, preFilteredRows, id },
+}) {
+  const options = useMemo(() => {
+    const options = new Set();
+    preFilteredRows.forEach((row) => {
+      options.add(row.values[id]);
+    });
+    return [...options.values()];
+  }, [id, preFilteredRows]);
+
+  return (
+    <select
+      value={filterValue}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined);
+      }}
+    >
+      <option value=''>All</option>
+      {options.map((option, i) => (
+        <option key={i} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
   );
 }
 
@@ -197,8 +224,6 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 
 fuzzyTextFilterFn.autoRemove = (val) => !val;
 
-let selectedRows = [];
-
 function Table({ columns, data, updateMyData, skipReset }) {
   const filterTypes = useMemo(
     () => ({
@@ -233,7 +258,6 @@ function Table({ columns, data, updateMyData, skipReset }) {
     headerGroups,
     prepareRow,
     page,
-    rows,
     canPreviousPage,
     canNextPage,
     pageOptions,
@@ -323,9 +347,6 @@ function Table({ columns, data, updateMyData, skipReset }) {
         <tbody {...getTableBodyProps()}>
           {page.map((row) => {
             prepareRow(row);
-            {
-              selectedRows = rows;
-            }
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
@@ -407,9 +428,9 @@ function Table({ columns, data, updateMyData, skipReset }) {
               canPreviousPage,
               sortBy,
               groupBy,
-              expanded,
+              expanded: expanded,
               filters,
-              selectedRowIds,
+              selectedRowIds: selectedRowIds,
             },
             null,
             2
@@ -429,6 +450,18 @@ function filterGreaterThan(rows, id, filterValue) {
 
 filterGreaterThan.autoRemove = (val) => typeof val !== 'number';
 
+function roundedMedian(leafValues) {
+  let min = leafValues[0] || 0;
+  let max = leafValues[0] || 0;
+
+  leafValues.forEach((value) => {
+    min = Math.min(min, value);
+    max = Math.max(max, value);
+  });
+
+  return Math.round((min + max) / 2);
+}
+
 const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
   const defaultRef = useRef();
   const resolvedRef = ref || defaultRef;
@@ -439,7 +472,12 @@ const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
 
   return (
     <>
-      <input type='checkbox' ref={resolvedRef} {...rest} />
+      <input
+        type='checkbox'
+        ref={resolvedRef}
+        {...rest}
+        onClick={() => console.log({ ...rest })}
+      />
     </>
   );
 });
@@ -487,10 +525,8 @@ export const ReactTable = ({ tableData }) => {
           {
             Header: 'Open Issues',
             accessor: 'openIssues',
-            Filter: NumberRangeColumnFilter,
-            filter: 'between',
-            aggregate: 'sum',
-            Aggregated: ({ value }) => `${value} (total)`,
+            Filter: SelectColumnFilter,
+            filter: 'includes',
           },
           {
             Header: 'Owner',
@@ -535,36 +571,37 @@ export const ReactTable = ({ tableData }) => {
     setData(originalData);
   };
 
-  const addData = (data) => {
-    const Data = [...newData, data];
+  const addData = () => {
+    let Data = [
+      ...newData,
+      {
+        name: 'name',
+        fullName: 'name',
+        watchers: 123,
+        forks: 123,
+        owner: 123,
+        openIssues: 123,
+      },
+    ];
     setNewData(Data);
     setData(Data);
   };
 
   const deleteData = () => {
-    let Data = [];
-    Data = selectedRows
-      .filter((row) => {
-        return !row.isSelected;
-      })
-      .map((row) => {
-        return row.values;
+    let Data = [...newData];
+    ['Ghost', 'socket.io', 'pure', 'd3', 'vue', 'react'].forEach((element) => {
+      Data = Data.filter((data) => {
+        return data.name !== element;
       });
-    setNewData(Data);
+    });
+    console.log(Data);
     setData(Data);
   };
 
   const duplicateData = () => {
-    let Data = [];
-    Data = selectedRows
-      .filter((row) => {
-        return row.isSelected;
-      })
-      .map((row) => {
-        return row.values;
-      });
-    setNewData([...newData, ...Data]);
-    setData([...newData, ...Data]);
+    let Data = [...newData];
+    console.log(Data);
+    setData(Data);
   };
 
   return (
@@ -577,7 +614,14 @@ export const ReactTable = ({ tableData }) => {
       >
         Reset Data
       </Button>
-      <TransitionsModal addData={addData} />
+      <Button
+        className='button-reset'
+        onClick={addData}
+        variant='contained'
+        color='primary'
+      >
+        Add Data
+      </Button>
       <Button
         className='button-reset'
         onClick={duplicateData}

@@ -29,7 +29,8 @@ export const Home = () => {
   }, [posts]);
 
   return (
-    <div>
+    <Layout>
+      <Link to='/chart'>Navigate to Chart Page</Link>
       {!loading ? (
         <>
           <ReactTable tableData={makeTableData} />
@@ -37,6 +38,6 @@ export const Home = () => {
       ) : (
         <p>Loading...</p>
       )}
-    </div>
+    </Layout>
   );
 };

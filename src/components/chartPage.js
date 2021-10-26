@@ -2,8 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from './layout';
 import { MyResponsiveLine } from './chart/responsiveLineChart';
-import { MyResponsivePie } from './chart/responsivePie';
-import { MyResponsiveBar } from './chart/responsiveBar';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchPosts, postsSelector } from '../slices/posts';
@@ -32,22 +30,16 @@ export const ChartPage = () => {
   }, [dispatch]);
 
   return (
-    <div>
+    <Layout>
+      <h1>Chart page</h1>
+      <Link to='/'>Navigate to Table Page</Link>
       {!loading ? (
-        <div>
-          <div style={{ width: '85vw', height: '700px' }}>
-            <MyResponsiveLine data={makeData} />
-          </div>
-          <div style={{ width: '85vw', height: '700px' }}>
-            <MyResponsivePie />
-          </div>
-          <div style={{ width: '85vw', height: '700px' }}>
-            <MyResponsiveBar />
-          </div>
+        <div style={{ width: '85vw', height: '700px' }}>
+          <MyResponsiveLine data={makeData} />
         </div>
       ) : (
         <p>Loading...</p>
       )}
-    </div>
+    </Layout>
   );
 };
