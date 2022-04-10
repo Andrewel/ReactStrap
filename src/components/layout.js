@@ -1,13 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ToggleButton } from "./toggleButton/toggleButton";
-import { ExampleComponent, AvButton } from "av_shared_library";
+import { TestComponent } from "av-react-component-library";
 
 export const Layout = ({ children }) => {
   return (
     <div>
-      <ExampleComponent text={"gggg"} />
-      <AvButton label={"gggg"} primary/>
+      <TestComponent heading="secondary" />
       <h1>
         <Link to="/">ReactTable</Link>
       </h1>
