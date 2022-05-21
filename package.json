@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "prepare": "husky install",
+    "pre-commit": "lint-staged"
   },
   "keywords": [],
   "author": "andrei_ulasau",
@@ -17,10 +19,13 @@
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.10.1",
     "@babel/preset-react": "^7.10.1",
+    "@testing-library/react": "^13.2.0",
     "babel-loader": "^8.1.0",
     "css-loader": "^3.5.3",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
+    "husky": "^7.0.0",
+    "lint-staged": "^12.3.3",
     "react-hot-loader": "^4.12.21",
     "sass": "^1.26.7",
     "sass-loader": "^8.0.2",
@@ -45,9 +50,14 @@
     "react-redux": "7.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.0.1",
-    "react-table": "^7.1.0",
+    "react-table": "^7.7.0",
     "react-transition-group": "^4.4.1",
     "redux": "4.0.5",
     "styled-components": "^4.3.2"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
   }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from './layout';
-import { ReactTable } from './reactTable/reactTable';
+import { ReactTablePage } from './reactTablePage/reactTablePage';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchPosts, postsSelector } from '../slices/posts';
@@ -32,7 +32,7 @@ export const Home = () => {
     <div>
       {!loading ? (
         <>
-          <ReactTable tableData={makeTableData} />
+          <ReactTablePage tableData={makeTableData} />
         </>
       ) : (
         <p>Loading...</p>
